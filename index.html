@@ -1,203 +1,413 @@
-<!-- ======================================================== -->
-<!-- [KBS 이벤트 페이지 내 삽입용 - 리워드 광고 모달 & 버튼 코드] -->
-<!-- ======================================================== -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KBS 2TV 주말드라마 <사랑이 온다> 본방사수 이벤트</title>
+  
+  <!-- Google Publisher Tag (GPT) -->
+  <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
 
-<!-- 1. Google Publisher Tag (GPT) 스크립트 (상단 head 영역 또는 본문 상단에 추가) -->
-<script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
+  <style>
+    :root {
+      --kbs-blue: #0056b3;
+      --kbs-dark: #1e293b;
+      --bg-gray: #f8fafc;
+    }
 
-<style>
-  /* KBS 이벤트 영역에 맞춘 버튼 스타일링 */
-  .kbs-reward-action-area {
-    text-align: center;
-    margin: 30px 0;
-  }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  .btn-kbs-reward {
-    background-color: #1e3a8a;
-    color: #ffffff;
-    border: none;
-    padding: 16px 36px;
-    font-size: 1.15rem;
-    font-weight: 700;
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
-    transition: all 0.2s ease;
-    width: 100%;
-    max-width: 340px;
-  }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-gray);
+      color: #333333;
+    }
 
-  .btn-kbs-reward:hover {
-    background-color: #1e40af;
-    transform: translateY(-2px);
-  }
+    /* GNB / 상단 헤더 (KBS 사이트 유지용 스켈레톤) */
+    .kbs-header {
+      background-color: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
-  /* 오버레이 광고 모달 스타일 */
-  .ad-modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    z-index: 99999;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-  }
+    .kbs-logo {
+      font-weight: 900;
+      font-size: 1.4rem;
+      color: var(--kbs-blue);
+      text-decoration: none;
+    }
 
-  .ad-modal-content {
-    background: #ffffff;
-    width: 90%;
-    max-width: 480px;
-    border-radius: 12px;
-    overflow: hidden;
-    position: relative;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-  }
+    .kbs-nav {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+    }
 
-  .ad-header {
-    background: #1e293b;
-    color: #ffffff;
-    padding: 12px 16px;
-    font-size: 0.9rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+    .kbs-nav a {
+      text-decoration: none;
+      color: #475569;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
 
-  .ad-body {
-    padding: 30px 20px;
-    min-height: 250px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: #f8fafc;
-  }
+    /* 메인 이벤트 컨테이너 */
+    .event-main-container {
+      width: 100%;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
 
-  .ad-timer-badge {
-    background: #ef4444;
-    color: #ffffff;
-    font-size: 0.85rem;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-weight: bold;
-  }
+    .event-card {
+      background: #ffffff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(225, 235, 245, 0.8);
+    }
 
-  .btn-close-ad {
-    background: #22c55e;
-    color: #ffffff;
-    border: none;
-    padding: 12px 24px;
-    font-size: 1rem;
-    font-weight: bold;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 15px;
-    display: none;
-  }
+    /* 포스터 이미지 영역 */
+    .poster-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background-color: #f0f4f8;
+      overflow: hidden;
+    }
 
-  /* 광고 시청 완료 후 노출될 이벤트 포스터 영역 */
-  .kbs-event-poster-container {
-    display: none;
-    width: 100%;
-    margin-top: 20px;
-    text-align: center;
-    animation: fadeIn 0.6s ease-in-out;
-  }
+    .poster-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
 
-  .kbs-event-poster-container img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-  }
+    .badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: rgba(43, 108, 176, 0.85);
+      color: #ffffff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      backdrop-filter: blur(4px);
+    }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-</style>
+    /* 콘텐츠 및 응모 영역 */
+    .event-content {
+      padding: 32px 28px;
+      text-align: center;
+    }
 
-<!-- 2. '광고테스트' 문구 위치에 들어갈 HTML 요소 -->
-<div id="kbs-reward-gate-box" class="kbs-reward-action-area">
-  <button id="reward-btn" class="btn-kbs-reward" onclick="startKbsAdFlow()">
-    광고 보고 응모하기
-  </button>
-</div>
+    .sub-title {
+      display: block;
+      font-size: 14px;
+      color: #5a789a;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
 
-<!-- 3. 광고 시청 완료 시 표시될 이벤트 콘텐츠/포스터 영역 -->
-<div id="kbs-event-poster-box" class="kbs-event-poster-container">
-  <img src="event_poster.png" alt="이벤트 응모 포스터">
-</div>
+    .main-title {
+      font-size: 24px;
+      color: #1a202c;
+      font-weight: 700;
+      margin-bottom: 12px;
+      word-break: keep-all;
+    }
 
-<!-- 4. 보상형 광고 모달 구조 -->
-<div id="kbs-ad-modal" class="ad-modal-overlay">
-  <div class="ad-modal-content">
-    <div class="ad-header">
-      <span>스폰서 광고</span>
-      <span id="ad-timer" class="ad-timer-badge">광고 시청 중 (5초)</span>
+    .event-desc {
+      font-size: 15px;
+      color: #4a5568;
+      line-height: 1.6;
+      margin-bottom: 24px;
+      word-break: keep-all;
+    }
+
+    .prize-box {
+      background: #f4f8fc;
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 28px;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .prize-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 14px;
+      flex-wrap: wrap;
+    }
+
+    .prize-tag {
+      font-weight: 700;
+      color: #2b6cb0;
+    }
+
+    .prize-name {
+      color: #2d3748;
+      font-weight: 600;
+    }
+
+    /* 응모 CTA 버튼 */
+    .btn-watch-ad {
+      width: 100%;
+      max-width: 360px;
+      height: 56px;
+      background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 6px 20px rgba(49, 130, 206, 0.35);
+      transition: all 0.2s ease;
+    }
+
+    .btn-watch-ad:hover {
+      background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(49, 130, 206, 0.45);
+    }
+
+    .notice-text {
+      font-size: 12px;
+      color: #a0aec0;
+      margin-top: 14px;
+    }
+
+    /* 모달 팝업 스타일 */
+    .ad-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 99999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .ad-modal-content {
+      background: #ffffff;
+      width: 90%;
+      max-width: 480px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .ad-header {
+      background: #1e293b;
+      color: #ffffff;
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .ad-body {
+      padding: 30px 20px;
+      min-height: 250px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: #f8fafc;
+    }
+
+    .ad-timer-badge {
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 0.85rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: bold;
+    }
+
+    .btn-close-ad {
+      background: #22c55e;
+      color: #ffffff;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 15px;
+      display: none;
+    }
+
+    .kbs-event-poster-container {
+      display: none;
+      width: 100%;
+      margin-top: 20px;
+      text-align: center;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    .kbs-event-poster-container img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    /* 하단 푸터 (KBS 유지용) */
+    .kbs-footer {
+      background-color: #1e293b;
+      color: #94a3b8;
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 0.85rem;
+      margin-top: 60px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- KBS 상단 메인 헤더 유지 -->
+  <header class="kbs-header">
+    <a href="#" class="kbs-logo">KBS</a>
+    <ul class="kbs-nav">
+      <li><a href="#">편성표</a></li>
+      <li><a href="#">드라마</a></li>
+      <li><a href="#">예능</a></li>
+      <li><a href="#">이벤트</a></li>
+    </ul>
+  </header>
+
+  <!-- 메인 콘텐츠 영역 (이벤트 카드 디자인) -->
+  <main class="event-main-container">
+    <section class="event-card">
+      <div class="poster-wrapper">
+        <img src="image_51b8dc.png" alt="사랑이 온다 메인 포스터" class="poster-img" />
+        <div class="badge">이벤트 진행 중</div>
+      </div>
+
+      <div class="event-content">
+        <span class="sub-title">KBS 2TV 주말드라마</span>
+        <h2 class="main-title">&lt;사랑이 온다&gt; 본방사수 응모 이벤트</h2>
+        <p class="event-desc">
+          짧은 영상 광고를 시청하시면 이벤트 응모가 완료됩니다.<br>
+          추첨을 통해 매일 다양한 선물을 드립니다!
+        </p>
+
+        <div class="prize-box">
+          <div class="prize-item">
+            <span class="prize-tag">🎁 이벤트 경품</span>
+            <span class="prize-name">스타벅스 아메리카노 / 모바일 상품권</span>
+          </div>
+        </div>
+
+        <button class="btn-watch-ad" onclick="startKbsAdFlow()">
+          <span>▶</span>
+          <span>광고 시청하고 응모하기</span>
+        </button>
+        
+        <p class="notice-text">* 광고 시청이 완료되어야 응모권이 정상 지급됩니다.</p>
+      </div>
+    </section>
+
+    <!-- 시청 완료 시 노출될 완료 영역 -->
+    <div id="kbs-event-poster-box" class="kbs-event-poster-container">
+      <img src="event_poster.png" alt="이벤트 응모 완료 포스터">
     </div>
-    <div class="ad-body">
-      <!-- GAM 실제 광고 슬롯 -->
-      <div id="gpt-rewarded-slot"></div>
-      <button id="ad-complete-btn" class="btn-close-ad" onclick="grantKbsReward()">
-        시청 완료! 응모하기
-      </button>
+  </main>
+
+  <!-- 보상형 광고 모달 팝업 -->
+  <div id="kbs-ad-modal" class="ad-modal-overlay">
+    <div class="ad-modal-content">
+      <div class="ad-header">
+        <span>스폰서 광고</span>
+        <span id="ad-timer" class="ad-timer-badge">광고 시청 중 (5초)</span>
+      </div>
+      <div class="ad-body">
+        <div id="gpt-rewarded-slot"></div>
+        <button id="ad-complete-btn" class="btn-close-ad" onclick="grantKbsReward()">
+          시청 완료! 응모하기
+        </button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- 5. GPT 정의 및 스크립트 로직 -->
-<script>
-  window.googletag = window.googletag || {cmd: []};
+  <!-- KBS 하단 푸터 유지 -->
+  <footer class="kbs-footer">
+    <p>Copyright ⓒ KBS Media All rights reserved.</p>
+  </footer>
 
-  let countdown = 5;
-  let timerId = null;
+  <script>
+    window.googletag = window.googletag || {cmd: []};
 
-  googletag.cmd.push(function() {
-    // KBS GAM 광고 단위 경로 (/22056527556/reward_banner) 적용
-    googletag.defineSlot('/22056527556/reward_banner', [[300, 250], [1, 1], 'fluid'], 'gpt-rewarded-slot')
-             .addService(googletag.pubads());
-    googletag.enableServices();
-  });
+    let countdown = 5;
+    let timerId = null;
 
-  // 버튼 클릭 시 모달 열기 및 광고 호출
-  function startKbsAdFlow() {
-    document.getElementById('kbs-ad-modal').style.display = 'flex';
-    
     googletag.cmd.push(function() {
-      googletag.display('gpt-rewarded-slot');
+      googletag.defineSlot('/22056527556/reward_banner', [[300, 250], [1, 1], 'fluid'], 'gpt-rewarded-slot')
+               .addService(googletag.pubads());
+      googletag.enableServices();
     });
 
-    countdown = 5;
-    const timerBadge = document.getElementById('ad-timer');
-    const completeBtn = document.getElementById('ad-complete-btn');
-    
-    timerBadge.style.display = 'inline-block';
-    completeBtn.style.display = 'none';
-    timerBadge.textContent = `광고 시청 중 (${countdown}초)`;
+    function startKbsAdFlow() {
+      document.getElementById('kbs-ad-modal').style.display = 'flex';
+      
+      googletag.cmd.push(function() {
+        googletag.display('gpt-rewarded-slot');
+      });
 
-    timerId = setInterval(function() {
-      countdown--;
-      if (countdown > 0) {
-        timerBadge.textContent = `광고 시청 중 (${countdown}초)`;
-      } else {
-        clearInterval(timerId);
-        timerBadge.style.display = 'none';
-        completeBtn.style.display = 'block';
-      }
-    }, 1000);
-  }
+      countdown = 5;
+      const timerBadge = document.getElementById('ad-timer');
+      const completeBtn = document.getElementById('ad-complete-btn');
+      
+      timerBadge.style.display = 'inline-block';
+      completeBtn.style.display = 'none';
+      timerBadge.textContent = `광고 시청 중 (${countdown}초)`;
 
-  // 시청 완료 후 보상 지급 (게이트 숨김 및 포스터 오픈)
-  function grantKbsReward() {
-    document.getElementById('kbs-ad-modal').style.display = 'none';
-    document.getElementById('kbs-reward-gate-box').style.display = 'none';
-    
-    const imageBox = document.getElementById('kbs-event-poster-box');
-    imageBox.style.display = 'block';
-    imageBox.scrollIntoView({ behavior: 'smooth' });
-  }
-</script>
+      timerId = setInterval(function() {
+        countdown--;
+        if (countdown > 0) {
+          timerBadge.textContent = `광고 시청 중 (${countdown}초)`;
+        } else {
+          clearInterval(timerId);
+          timerBadge.style.display = 'none';
+          completeBtn.style.display = 'block';
+        }
+      }, 1000);
+    }
+
+    function grantKbsReward() {
+      document.getElementById('kbs-ad-modal').style.display = 'none';
+      
+      const imageBox = document.getElementById('kbs-event-poster-box');
+      imageBox.style.display = 'block';
+      imageBox.scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
