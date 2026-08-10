@@ -92,7 +92,6 @@
       transform: none;
     }
 
-    /* 광고 시청 후 나타날 이미지 영역 */
     .reward-image-container {
       display: none;
       width: 100%;
@@ -114,8 +113,6 @@
 <body>
 
   <div class="container">
-    
-    <!-- 광고 시청 전 안내 영역 -->
     <div id="gate-box">
       <div class="header-box">
         <h1>KBS 2TV 주말드라마 &lt;사랑이 온다&gt;</h1>
@@ -123,17 +120,15 @@
       </div>
       
       <div class="action-area">
-        <button id="reward-btn" class="btn-submit" disabled onclick="showAd()">
+        <button id="reward-btn" class="btn-submit" disabled onclick="handleButtonClick()">
           광고 로딩 중...
         </button>
       </div>
     </div>
 
-    <!-- 광고 완료 후 보여질 이미지 영역 -->
     <div id="event-image-box" class="reward-image-container">
       <img src="event_poster.png" alt="사랑이 온다 퀴즈 EVENT 포스터">
     </div>
-
   </div>
 
   <script>
@@ -141,40 +136,56 @@
 
     let rewardedSlot;
     let isAdReady = false;
+    let isSupported = true;
 
     googletag.cmd.push(function() {
-      // 구글 공식 테스트 리워드 광고 슬롯으로 변경 (/22639388115/rewarded_web_example)
-      rewardedSlot = googletag.defineRewardedSlot(
-        '/22639388115/rewarded_web_example',
-        [[1, 1]]
-      ).addService(googletag.pubads());
+      // 1. defineRewardedSlot 지원 여부 안전성 검사
+      if (typeof googletag.defineRewardedSlot === 'function') {
+        rewardedSlot = googletag.defineRewardedSlot(
+          '/22056527556/reward_banner',
+          [[1, 1]]
+        ).addService(googletag.pubads());
 
-      // 1. 광고 시청 완료(보상 지급) 이벤트
-      googletag.pubads().addEventListener('rewardedSlotGranted', function(event) {
-        console.log('Reward granted!');
-        unlockEventContent();
-      });
+        // 시청 완료 이벤트
+        googletag.pubads().addEventListener('rewardedSlotGranted', function(event) {
+          console.log('Reward granted!');
+          unlockEventContent();
+        });
 
-      // 2. 광고 준비 완료 이벤트
-      googletag.pubads().addEventListener('rewardedSlotReady', function(event) {
-        console.log('Rewarded slot is ready.');
-        isAdReady = true;
-        const btn = document.getElementById('reward-btn');
-        btn.disabled = false;
-        btn.textContent = '광고 보고 응모하기';
-      });
+        // 준비 완료 이벤트
+        googletag.pubads().addEventListener('rewardedSlotReady', function(event) {
+          console.log('Rewarded slot is ready.');
+          isAdReady = true;
+          const btn = document.getElementById('reward-btn');
+          btn.disabled = false;
+          btn.textContent = '광고 보고 응모하기';
+        });
 
-      // 3. 광고 닫힘 이벤트
-      googletag.pubads().addEventListener('rewardedSlotClosed', function(event) {
-        googletag.destroySlots([rewardedSlot]);
-      });
+        // 닫힘 이벤트
+        googletag.pubads().addEventListener('rewardedSlotClosed', function(event) {
+          if (rewardedSlot) {
+            googletag.destroySlots([rewardedSlot]);
+          }
+        });
 
-      googletag.enableServices();
-      googletag.display(rewardedSlot);
+        googletag.enableServices();
+        googletag.display(rewardedSlot);
+      } else {
+        // PC 브라우저 등 웹 보상형 광고 미지원 환경 처리
+        console.warn('The current environment does not support rewarded web ads.');
+        isSupported = false;
+        enableFallback();
+      }
     });
 
-    // 버튼 클릭 시 광고 모달 표시
-    function showAd() {
+    // 버튼 클릭 처리
+    function handleButtonClick() {
+      if (!isSupported) {
+        // 미지원 환경일 경우 바로 이미지 노출
+        unlockEventContent();
+        return;
+      }
+
       if (isAdReady && rewardedSlot) {
         googletag.cmd.push(function() {
           rewardedSlot.makeRewardedVisible();
@@ -184,10 +195,16 @@
       }
     }
 
-    // 광고 완료 시 이미지 노출
+    // 미지원 환경 시 버튼 활성화 및 스킵 모드 전환
+    function enableFallback() {
+      const btn = document.getElementById('reward-btn');
+      btn.disabled = false;
+      btn.textContent = '응모 페이지 열기';
+    }
+
+    // 콘텐츠 잠금 해제 (포스터 노출)
     function unlockEventContent() {
       document.getElementById('gate-box').style.display = 'none';
-      
       const imageBox = document.getElementById('event-image-box');
       imageBox.style.display = 'block';
       imageBox.scrollIntoView({ behavior: 'smooth' });
