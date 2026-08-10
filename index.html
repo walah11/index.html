@@ -136,13 +136,12 @@
 
     let rewardedSlot;
     let isAdReady = false;
-    let isSupported = true;
 
     googletag.cmd.push(function() {
-      // 1. defineRewardedSlot 지원 여부 안전성 검사
+      // 100% 테스트 광고가 송출되는 Google 공식 테스트 리워드 광고 슬롯
       if (typeof googletag.defineRewardedSlot === 'function') {
         rewardedSlot = googletag.defineRewardedSlot(
-          '/22056527556/reward_banner',
+          '/22639388115/rewarded_web_example',
           [[1, 1]]
         ).addService(googletag.pubads());
 
@@ -171,35 +170,23 @@
         googletag.enableServices();
         googletag.display(rewardedSlot);
       } else {
-        // PC 브라우저 등 웹 보상형 광고 미지원 환경 처리
-        console.warn('The current environment does not support rewarded web ads.');
-        isSupported = false;
-        enableFallback();
+        // PC 브라우저 등 미지원 환경 처리
+        const btn = document.getElementById('reward-btn');
+        btn.disabled = false;
+        btn.textContent = '응모 페이지 열기';
       }
     });
 
     // 버튼 클릭 처리
     function handleButtonClick() {
-      if (!isSupported) {
-        // 미지원 환경일 경우 바로 이미지 노출
-        unlockEventContent();
-        return;
-      }
-
       if (isAdReady && rewardedSlot) {
         googletag.cmd.push(function() {
           rewardedSlot.makeRewardedVisible();
         });
       } else {
-        alert('광고를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+        // 광고 미지원/로딩 실패 환경 시 바로 노출
+        unlockEventContent();
       }
-    }
-
-    // 미지원 환경 시 버튼 활성화 및 스킵 모드 전환
-    function enableFallback() {
-      const btn = document.getElementById('reward-btn');
-      btn.disabled = false;
-      btn.textContent = '응모 페이지 열기';
     }
 
     // 콘텐츠 잠금 해제 (포스터 노출)
