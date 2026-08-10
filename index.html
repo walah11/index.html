@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KBS 2TV 주말드라마 <사랑이 온다> 본방사수 이벤트</title>
 
-  <!-- Google IMA SDK 스크립트 -->
-  <script src="https://imasdk.googleapis.com/js/sdk/v3/ima3.js"></script>
+  <!-- Google Publisher Tag (GPT) 공식 라이브러리 -->
+  <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
 
   <style>
     :root {
@@ -131,78 +131,6 @@
 
     .notice-text { font-size: 12px; color: #a0aec0; margin-top: 14px; }
 
-    .ad-modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.9);
-      z-index: 99999;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-
-    .ad-modal-content {
-      background: #000000;
-      width: 90%;
-      max-width: 640px;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
-      position: relative;
-    }
-
-    .ad-header {
-      background: #1e293b;
-      color: #ffffff;
-      padding: 12px 16px;
-      font-size: 0.9rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    #video-container {
-      position: relative;
-      width: 100%;
-      height: 360px;
-      background-color: #000000;
-    }
-
-    #content-video {
-      width: 100%;
-      height: 100%;
-    }
-
-    #ad-container {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-    }
-
-    .ad-status-badge {
-      background: #3b82f6;
-      color: #ffffff;
-      font-size: 0.85rem;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-weight: bold;
-    }
-
-    .btn-close-ad {
-      background: #22c55e;
-      color: #ffffff;
-      border: none;
-      padding: 12px 24px;
-      font-size: 1rem;
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 15px;
-      display: none;
-    }
-
     .kbs-event-poster-container {
       display: none;
       width: 100%;
@@ -255,7 +183,7 @@
         <span class="sub-title">KBS 2TV 주말드라마</span>
         <h2 class="main-title">&lt;사랑이 온다&gt; 본방사수 응모 이벤트</h2>
         <p class="event-desc">
-          짧은 동영상 광고를 시청하시면 이벤트 응모가 완료됩니다.<br>
+          짧은 광고(동영상 또는 이미지)를 시청하시면 이벤트 응모가 완료됩니다.<br>
           추첨을 통해 매일 다양한 선물을 드립니다!
         </p>
 
@@ -266,153 +194,86 @@
           </div>
         </div>
 
-        <button class="btn-watch-ad" onclick="playVideoAd()">
+        <!-- 버튼 클릭 시 구글 표준 웹 보상형 전면 광고 호출 -->
+        <button id="reward-ad-btn" class="btn-watch-ad" onclick="showRewardedAd()">
           <span>▶</span>
-          <span>동영상 광고 시청하고 응모하기</span>
+          <span>광고 시청하고 응모하기</span>
         </button>
         
-        <p class="notice-text">* 광고 재생이 종료된 후 응모 버튼이 활성화됩니다.</p>
+        <p class="notice-text">* 광고 시청을 완료하면 응모 완료 포스터가 노출됩니다.</p>
       </div>
     </section>
 
+    <!-- 시청 완료 시 보여줄 이미지 영역 -->
     <div id="kbs-event-poster-box" class="kbs-event-poster-container">
       <img src="event_poster.png" alt="이벤트 응모 완료 포스터">
     </div>
   </main>
 
-  <div id="kbs-ad-modal" class="ad-modal-overlay">
-    <div class="ad-modal-content">
-      <div class="ad-header">
-        <span>스폰서 동영상 광고</span>
-        <span id="ad-status" class="ad-status-badge">광고 준비 중...</span>
-      </div>
-      <div id="video-container">
-        <video id="content-video" playsinline muted></video>
-        <div id="ad-container"></div>
-      </div>
-      <div style="padding: 15px; text-align: center;">
-        <button id="ad-complete-btn" class="btn-close-ad" onclick="grantKbsReward()">
-          시청 완료! 응모 제출하기
-        </button>
-      </div>
-    </div>
-  </div>
-
   <footer class="kbs-footer">
     <p>Copyright ⓒ KBS Media All rights reserved.</p>
   </footer>
 
+  <!-- 구글 GPT 웹 보상형 전면광고(Rewarded Web) 연동 스크립트 -->
   <script>
-    let adsLoader;
-    let adsManager;
-    let adDisplayContainer;
-    let videoElement = document.getElementById('content-video');
-    let adContainer = document.getElementById('ad-container');
+    window.googletag = window.googletag || {cmd: []};
 
-    const GAM_VAST_URL = "https://pubads.g.doubleclick.net/gampad/ads?" +
-      "iu=/22056527556/reward_banner&" +
-      "description_url=" + encodeURIComponent(window.location.href) + "&" +
-      "tfcd=0&npa=0&sz=640x480|400x300|1x1v&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=" + Date.now();
+    let rewardedSlot;
 
-    function isGoogleImaLoaded() {
-      return typeof google !== 'undefined' && typeof google.ima !== 'undefined';
-    }
-
-    function initIMA() {
-      if (!isGoogleImaLoaded()) {
-        console.warn("Google IMA SDK가 아직 로드되지 않았거나 애드블록에 의해 차단되었습니다.");
-        return false;
-      }
-
-      adDisplayContainer = new google.ima.AdDisplayContainer(adContainer, videoElement);
-      adsLoader = new google.ima.AdsLoader(adDisplayContainer);
-
-      adsLoader.addEventListener(
-        google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
-        onAdsManagerLoaded,
-        false
+    googletag.cmd.push(function() {
+      // 1. 웹 보상형 전면 슬롯 정의 (OutOfPage - REWARDED)
+      rewardedSlot = googletag.defineOutOfPageSlot(
+        '/22056527556/reward_banner',
+        googletag.enums.OutOfPageFormat.REWARDED
       );
-      adsLoader.addEventListener(
-        google.ima.AdErrorEvent.Type.AD_ERROR,
-        onAdError,
-        false
-      );
-      return true;
-    }
 
-    function playVideoAd() {
-      document.getElementById('kbs-ad-modal').style.display = 'flex';
-      document.getElementById('ad-status').textContent = "광고 로딩 중...";
+      if (rewardedSlot) {
+        rewardedSlot.addService(googletag.pubads());
 
-      if (!isGoogleImaLoaded()) {
-        onAdError({ getError: function() { return "Google IMA SDK Not Loaded"; } });
-        return;
+        // 2. 광고 로드 성공(준비 완료) 이벤트 처리
+        googletag.pubads().addEventListener('rewardedSlotReady', function(evt) {
+          console.log('웹 보상형 전면광고 준비 완료');
+          // 전면 모달 광고 자체를 화면에 표출
+          evt.makeRewardedVisible();
+        });
+
+        // 3. 광고 시청 조건 충족(보상 획득) 이벤트 처리 - 비디오/배너 모두 지원
+        googletag.pubads().addEventListener('rewardedSlotGranted', function(evt) {
+          console.log('보상 지급 조건 완료!');
+          grantKbsReward();
+        });
+
+        // 4. 광고 닫힘 이벤트 처리
+        googletag.pubads().addEventListener('rewardedSlotClosed', function(evt) {
+          console.log('보상형 광고가 닫혔습니다.');
+          // 필요 시 보상 슬롯 폐기 후 재정의 가능
+          googletag.destroySlots([rewardedSlot]);
+        });
+
+        googletag.enableServices();
       }
+    });
 
-      if (!adsLoader) {
-        initIMA();
-      }
-
-      adDisplayContainer.initialize();
-
-      const adsRequest = new google.ima.AdsRequest();
-      adsRequest.adTagUrl = GAM_VAST_URL;
-      adsRequest.linearAdSlotWidth = adContainer.clientWidth || 640;
-      adsRequest.linearAdSlotHeight = adContainer.clientHeight || 360;
-
-      adsLoader.requestAds(adsRequest);
-
-      setTimeout(function() {
-        if (!adsManager) {
-          onAdError({ getError: function() { return "Timeout or No Fill"; } });
+    // 사용자가 버튼을 눌렀을 때 실행
+    function showRewardedAd() {
+      googletag.cmd.push(function() {
+        if (rewardedSlot) {
+          // 전면 보상형 광고 요청
+          googletag.pubads().refresh([rewardedSlot]);
+        } else {
+          // 백업/테스트용 예외 처리
+          grantKbsReward();
         }
-      }, 6000);
+      });
     }
 
-    function onAdsManagerLoaded(adsManagerLoadedEvent) {
-      document.getElementById('ad-status').textContent = "광고 재생 중...";
-
-      const adsRenderingSettings = new google.ima.AdsRenderingSettings();
-      adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
-
-      adsManager = adsManagerLoadedEvent.getAdsManager(videoElement, adsRenderingSettings);
-
-      adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError);
-      adsManager.addEventListener(google.ima.AdEvent.Type.COMPLETE, onAdComplete);
-      adsManager.addEventListener(google.ima.AdEvent.Type.ALL_ADS_COMPLETED, onAdComplete);
-
-      try {
-        adsManager.init(adContainer.clientWidth, adContainer.clientHeight, google.ima.ViewMode.NORMAL);
-        adsManager.start();
-      } catch (adError) {
-        onAdError(adError);
-      }
-    }
-
-    function onAdError(adErrorEvent) {
-      console.log("Ad Status Notice: ", adErrorEvent);
-      if (adsManager) {
-        adsManager.destroy();
-      }
-      document.getElementById('ad-status').textContent = "광고 준비 완료";
-      document.getElementById('ad-status').style.background = "#eab308";
-      document.getElementById('ad-complete-btn').style.display = 'inline-block';
-    }
-
-    function onAdComplete() {
-      document.getElementById('ad-status').textContent = "시청 완료!";
-      document.getElementById('ad-status').style.background = "#22c55e";
-      document.getElementById('ad-complete-btn').style.display = 'inline-block';
-    }
-
+    // 보상 획득 시 최종 이벤트 처리
     function grantKbsReward() {
-      document.getElementById('kbs-ad-modal').style.display = 'none';
-      if (adsManager) {
-        adsManager.destroy();
-      }
       const imageBox = document.getElementById('kbs-event-poster-box');
-      imageBox.style.display = 'block';
-      imageBox.scrollIntoView({ behavior: 'smooth' });
+      if (imageBox) {
+        imageBox.style.display = 'block';
+        imageBox.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   </script>
 </body>
