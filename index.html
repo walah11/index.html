@@ -229,13 +229,13 @@
         rewardedSlot.addService(googletag.pubads());
 
         googletag.pubads().addEventListener('rewardedSlotReady', function(evt) {
-          console.log('웹 보상형 광고 사전 로딩 완료!');
+          console.log('웹 보상형 광고 수신 완료 (Ready)');
           isRewardedReady = true;
           makeRewardedVisibleFn = evt.makeRewardedVisible;
         });
 
         googletag.pubads().addEventListener('rewardedSlotGranted', function(evt) {
-          console.log('광고 시청 완료: 보상 제공');
+          console.log('보상 지급 조건 충족');
           grantKbsReward();
         });
 
@@ -245,7 +245,9 @@
         });
 
         googletag.enableServices();
-        googletag.display(rewardedSlot);
+
+        // Out-Of-Page 웹 보상형 광고 명시적 Ad Fetch 호출
+        googletag.pubads().refresh([rewardedSlot]);
       }
     });
 
@@ -253,7 +255,7 @@
       if (isRewardedReady && typeof makeRewardedVisibleFn === 'function') {
         makeRewardedVisibleFn();
       } else {
-        console.log("광고 준비 중이거나 Fill 물량이 없어 바로 보상을 진행합니다.");
+        console.warn("광고 수신 준비 중이거나 Fill 물량이 없어 바로 이벤트 응모를 진행합니다.");
         grantKbsReward();
       }
     }
