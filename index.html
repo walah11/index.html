@@ -183,7 +183,7 @@
         <span class="sub-title">KBS 2TV 주말드라마</span>
         <h2 class="main-title">&lt;사랑이 온다&gt; 본방사수 응모 이벤트</h2>
         <p class="event-desc">
-          짧은 광고(동영상 또는 이미지)를 시청하시면 이벤트 응모가 완료됩니다.<br>
+          짧은 광고를 시청하시면 이벤트 응모가 완료됩니다.<br>
           추첨을 통해 매일 다양한 선물을 드립니다!
         </p>
 
@@ -194,17 +194,15 @@
           </div>
         </div>
 
-        <!-- 버튼 클릭 시 구글 표준 웹 보상형 전면 광고 호출 -->
         <button id="reward-ad-btn" class="btn-watch-ad" onclick="showRewardedAd()">
           <span>▶</span>
-          <span>광고 시청하고 응모하기</span>
+          <span id="btn-text">광고 시청하고 응모하기</span>
         </button>
         
         <p class="notice-text">* 광고 시청을 완료하면 응모 완료 포스터가 노출됩니다.</p>
       </div>
     </section>
 
-    <!-- 시청 완료 시 보여줄 이미지 영역 -->
     <div id="kbs-event-poster-box" class="kbs-event-poster-container">
       <img src="event_poster.png" alt="이벤트 응모 완료 포스터">
     </div>
@@ -214,14 +212,14 @@
     <p>Copyright ⓒ KBS Media All rights reserved.</p>
   </footer>
 
-  <!-- 구글 GPT 웹 보상형 전면광고(Rewarded Web) 연동 스크립트 -->
   <script>
     window.googletag = window.googletag || {cmd: []};
 
     let rewardedSlot;
+    let isRewardedReady = false;
+    let makeRewardedVisibleFn = null;
 
     googletag.cmd.push(function() {
-      // 1. 웹 보상형 전면 슬롯 정의 (OutOfPage - REWARDED)
       rewardedSlot = googletag.defineOutOfPageSlot(
         '/22056527556/reward_banner',
         googletag.enums.OutOfPageFormat.REWARDED
@@ -230,44 +228,36 @@
       if (rewardedSlot) {
         rewardedSlot.addService(googletag.pubads());
 
-        // 2. 광고 로드 성공(준비 완료) 이벤트 처리
         googletag.pubads().addEventListener('rewardedSlotReady', function(evt) {
-          console.log('웹 보상형 전면광고 준비 완료');
-          // 전면 모달 광고 자체를 화면에 표출
-          evt.makeRewardedVisible();
+          console.log('웹 보상형 광고 사전 로딩 완료!');
+          isRewardedReady = true;
+          makeRewardedVisibleFn = evt.makeRewardedVisible;
         });
 
-        // 3. 광고 시청 조건 충족(보상 획득) 이벤트 처리 - 비디오/배너 모두 지원
         googletag.pubads().addEventListener('rewardedSlotGranted', function(evt) {
-          console.log('보상 지급 조건 완료!');
+          console.log('광고 시청 완료: 보상 제공');
           grantKbsReward();
         });
 
-        // 4. 광고 닫힘 이벤트 처리
         googletag.pubads().addEventListener('rewardedSlotClosed', function(evt) {
           console.log('보상형 광고가 닫혔습니다.');
-          // 필요 시 보상 슬롯 폐기 후 재정의 가능
           googletag.destroySlots([rewardedSlot]);
         });
 
         googletag.enableServices();
+        googletag.display(rewardedSlot);
       }
     });
 
-    // 사용자가 버튼을 눌렀을 때 실행
     function showRewardedAd() {
-      googletag.cmd.push(function() {
-        if (rewardedSlot) {
-          // 전면 보상형 광고 요청
-          googletag.pubads().refresh([rewardedSlot]);
-        } else {
-          // 백업/테스트용 예외 처리
-          grantKbsReward();
-        }
-      });
+      if (isRewardedReady && typeof makeRewardedVisibleFn === 'function') {
+        makeRewardedVisibleFn();
+      } else {
+        console.log("광고 준비 중이거나 Fill 물량이 없어 바로 보상을 진행합니다.");
+        grantKbsReward();
+      }
     }
 
-    // 보상 획득 시 최종 이벤트 처리
     function grantKbsReward() {
       const imageBox = document.getElementById('kbs-event-poster-box');
       if (imageBox) {
