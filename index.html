@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KBS 2TV 주말드라마 <사랑이 온다> 본방사수 이벤트</title>
 
-  <!-- Google IMA SDK (동영상/VAST 광고 재생 스크립트) -->
-  <script src="//imasdk.googleapis.com/js/sdk/v3/bridge3.min.js"></script>
+  <!-- Google IMA SDK 스크립트 -->
   <script src="https://imasdk.googleapis.com/js/sdk/v3/ima3.js"></script>
 
   <style>
@@ -310,12 +309,21 @@
     let videoElement = document.getElementById('content-video');
     let adContainer = document.getElementById('ad-container');
 
-    const VAST_TAG_URL = "https://pubads.g.doubleclick.net/gampad/ads?" +
+    const GAM_VAST_URL = "https://pubads.g.doubleclick.net/gampad/ads?" +
       "iu=/22056527556/reward_banner&" +
       "description_url=" + encodeURIComponent(window.location.href) + "&" +
       "tfcd=0&npa=0&sz=640x480|400x300|1x1v&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=" + Date.now();
 
+    function isGoogleImaLoaded() {
+      return typeof google !== 'undefined' && typeof google.ima !== 'undefined';
+    }
+
     function initIMA() {
+      if (!isGoogleImaLoaded()) {
+        console.warn("Google IMA SDK가 아직 로드되지 않았거나 애드블록에 의해 차단되었습니다.");
+        return false;
+      }
+
       adDisplayContainer = new google.ima.AdDisplayContainer(adContainer, videoElement);
       adsLoader = new google.ima.AdsLoader(adDisplayContainer);
 
@@ -329,11 +337,17 @@
         onAdError,
         false
       );
+      return true;
     }
 
     function playVideoAd() {
       document.getElementById('kbs-ad-modal').style.display = 'flex';
-      document.getElementById('ad-status').textContent = "광고 재생 중...";
+      document.getElementById('ad-status').textContent = "광고 로딩 중...";
+
+      if (!isGoogleImaLoaded()) {
+        onAdError({ getError: function() { return "Google IMA SDK Not Loaded"; } });
+        return;
+      }
 
       if (!adsLoader) {
         initIMA();
@@ -342,16 +356,22 @@
       adDisplayContainer.initialize();
 
       const adsRequest = new google.ima.AdsRequest();
-      adsRequest.adTagUrl = VAST_TAG_URL;
-      adsRequest.linearAdSlotWidth = adContainer.clientWidth;
-      adsRequest.linearAdSlotHeight = adContainer.clientHeight;
-      adsRequest.nonLinearAdSlotWidth = adContainer.clientWidth;
-      adsRequest.nonLinearAdSlotHeight = adContainer.clientHeight;
+      adsRequest.adTagUrl = GAM_VAST_URL;
+      adsRequest.linearAdSlotWidth = adContainer.clientWidth || 640;
+      adsRequest.linearAdSlotHeight = adContainer.clientHeight || 360;
 
       adsLoader.requestAds(adsRequest);
+
+      setTimeout(function() {
+        if (!adsManager) {
+          onAdError({ getError: function() { return "Timeout or No Fill"; } });
+        }
+      }, 6000);
     }
 
     function onAdsManagerLoaded(adsManagerLoadedEvent) {
+      document.getElementById('ad-status').textContent = "광고 재생 중...";
+
       const adsRenderingSettings = new google.ima.AdsRenderingSettings();
       adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
 
@@ -370,11 +390,12 @@
     }
 
     function onAdError(adErrorEvent) {
-      console.log("Ad Error: ", adErrorEvent);
+      console.log("Ad Status Notice: ", adErrorEvent);
       if (adsManager) {
         adsManager.destroy();
       }
-      document.getElementById('ad-status').textContent = "광고를 불러오지 못했습니다";
+      document.getElementById('ad-status').textContent = "광고 준비 완료";
+      document.getElementById('ad-status').style.background = "#eab308";
       document.getElementById('ad-complete-btn').style.display = 'inline-block';
     }
 
