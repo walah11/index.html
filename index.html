@@ -124,14 +124,13 @@
       
       <div class="action-area">
         <button id="reward-btn" class="btn-submit" disabled onclick="showAd()">
-          광고 보고 응모하기
+          광고 로딩 중...
         </button>
       </div>
     </div>
 
     <!-- 광고 완료 후 보여질 이미지 영역 -->
     <div id="event-image-box" class="reward-image-container">
-      <!-- event_poster.png 지정 -->
       <img src="event_poster.png" alt="사랑이 온다 퀴즈 EVENT 포스터">
     </div>
 
@@ -144,9 +143,9 @@
     let isAdReady = false;
 
     googletag.cmd.push(function() {
-      // 보상형 광고 슬롯 정의 (/22056527556/reward_banner)
+      // 구글 공식 테스트 리워드 광고 슬롯으로 변경 (/22639388115/rewarded_web_example)
       rewardedSlot = googletag.defineRewardedSlot(
-        '/22056527556/reward_banner',
+        '/22639388115/rewarded_web_example',
         [[1, 1]]
       ).addService(googletag.pubads());
 
