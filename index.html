@@ -3,21 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>리워드 광고 콘텐츠 잠금해제 테스트</title>
+  <title>사랑이 온다 퀴즈 EVENT</title>
   
   <!-- Google Publisher Tag (GPT) -->
   <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
   
   <style>
     :root {
-      --primary-color: #0052cc;
-      --primary-hover: #003d99;
-      --bg-color: #f4f6f9;
+      --primary-color: #2b4c7e;
+      --bg-color: #f0f4f8;
       --card-bg: #ffffff;
       --text-main: #333333;
-      --text-muted: #666666;
-      --border-color: #e1e4e8;
-      --accent-color: #28a745;
     }
 
     * {
@@ -34,176 +30,111 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      padding: 20px;
+      padding: 20px 10px;
     }
 
     .container {
       background-color: var(--card-bg);
       width: 100%;
       max-width: 600px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
       overflow: hidden;
-      border: 1px solid var(--border-color);
-    }
-
-    .header {
-      background-color: var(--primary-color);
-      color: #ffffff;
-      padding: 24px 20px;
       text-align: center;
     }
 
-    .header h1 {
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin-bottom: 8px;
+    .header-box {
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #2b4c7e 0%, #4a76a8 100%);
+      color: #fff;
     }
 
-    .header p {
-      font-size: 0.9rem;
+    .header-box h1 {
+      font-size: 1.6rem;
+      margin-bottom: 10px;
+      word-break: keep-all;
+    }
+
+    .header-box p {
+      font-size: 0.95rem;
       opacity: 0.9;
+      line-height: 1.5;
     }
 
-    .content-body {
-      padding: 24px 20px;
+    .action-area {
+      padding: 30px 20px;
     }
 
-    .status-badge {
-      display: inline-block;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 20px;
-      background-color: #e9ecef;
-      color: var(--text-muted);
-    }
-
-    .status-badge.ready {
-      background-color: #e3f2fd;
-      color: var(--primary-color);
-    }
-
-    .status-badge.unlocked {
-      background-color: #e8f5e9;
-      color: var(--accent-color);
-    }
-
-    /* Locked overlay & preview */
-    .locked-section {
-      border: 2px dashed var(--border-color);
-      border-radius: 8px;
-      padding: 24px;
-      text-align: center;
-      background-color: #fafafa;
-      margin-bottom: 20px;
-    }
-
-    .locked-icon {
-      font-size: 2.5rem;
-      margin-bottom: 12px;
-    }
-
-    .btn {
-      background-color: var(--primary-color);
+    .btn-submit {
+      background-color: #1e3a8a;
       color: #ffffff;
       border: none;
-      padding: 12px 24px;
-      font-size: 1rem;
-      font-weight: 600;
-      border-radius: 6px;
+      padding: 16px 32px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border-radius: 50px;
       cursor: pointer;
-      transition: background-color 0.2s ease, transform 0.1s ease;
+      box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+      transition: all 0.2s ease;
       width: 100%;
+      max-width: 320px;
     }
 
-    .btn:hover {
-      background-color: var(--primary-hover);
+    .btn-submit:hover {
+      background-color: #1e40af;
+      transform: translateY(-2px);
     }
 
-    .btn:active {
-      transform: scale(0.98);
-    }
-
-    .btn:disabled {
-      background-color: #cccccc;
+    .btn-submit:disabled {
+      background-color: #94a3b8;
       cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
     }
 
-    /* Unlocked / Collapsible Content */
-    .reward-content {
+    /* 광고 시청 후 나타날 이미지 영역 */
+    .reward-image-container {
       display: none;
-      border: 1px solid #c3e6cb;
-      background-color: #f8fdf9;
-      border-radius: 8px;
-      padding: 20px;
-      animation: fadeIn 0.5s ease-in-out;
+      width: 100%;
+      animation: fadeIn 0.6s ease-in-out;
     }
 
-    .reward-content h2 {
-      color: var(--accent-color);
-      font-size: 1.2rem;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .reward-content p {
-      font-size: 0.95rem;
-      line-height: 1.6;
-      color: #2c3e50;
+    .reward-image-container img {
+      width: 100%;
+      height: auto;
+      display: block;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
-    }
-
-    .footer {
-      padding: 16px 20px;
-      background-color: #f8f9fa;
-      border-top: 1px solid var(--border-color);
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      text-align: center;
     }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <div class="header">
-      <h1>🎁 리워드 콘텐츠 잠금해제</h1>
-      <p>광고 시청 완료 후 숨겨진 콘텐츠를 확인해보세요.</p>
-    </div>
-
-    <div class="content-body">
-      <div id="status" class="status-badge">광고 로딩 중...</div>
-
-      <!-- 잠금 상태 안내 영역 -->
-      <div id="locked-box" class="locked-section">
-        <div class="locked-icon">🔒</div>
-        <p style="margin-bottom: 16px; color: var(--text-muted); font-size: 0.95rem;">
-          아래 버튼을 눌러 리워드 광고를 완료하면<br>비밀 콘텐츠 영역이 자동으로 펼쳐집니다.
-        </p>
-        <button id="reward-btn" class="btn" disabled onclick="showAd()">광고 시청하고 내용 열기</button>
+    
+    <!-- 광고 시청 전 안내 영역 -->
+    <div id="gate-box">
+      <div class="header-box">
+        <h1>KBS 2TV 주말드라마 &lt;사랑이 온다&gt;</h1>
+        <p>광고를 시청하시면 이벤트 응모 페이지가 열립니다.</p>
       </div>
-
-      <!-- 리워드 완료 후 보상을 공개할 리워드/접힘(Collapse) 영역 -->
-      <div id="unlocked-box" class="reward-content">
-        <h2>🎉 콘텐츠 잠금 해제 완료!</h2>
-        <p>
-          광고를 끝까지 시청해 주셔서 감사합니다.<br><br>
-          이 영역은 GPT <code>rewardedSlotGranted</code> 이벤트를 수신받았을 때 <code>display: block</code>으로 전환되는 접힘(Collapse) 영역입니다. 이벤트 페이지용 혜택, 비디오, 쿠폰 코드 등을 여기에 배치할 수 있습니다.
-        </p>
+      
+      <div class="action-area">
+        <button id="reward-btn" class="btn-submit" disabled onclick="showAd()">
+          광고 보고 응모하기
+        </button>
       </div>
     </div>
 
-    <div class="footer">
-      Google Publisher Tag (GPT) Rewarded Slot Demo Page
+    <!-- 광고 완료 후 보여질 이미지 영역 -->
+    <div id="event-image-box" class="reward-image-container">
+      <!-- event_poster.png 지정 -->
+      <img src="event_poster.png" alt="사랑이 온다 퀴즈 EVENT 포스터">
     </div>
+
   </div>
 
   <script>
@@ -213,65 +144,54 @@
     let isAdReady = false;
 
     googletag.cmd.push(function() {
-      // 1. Google 공식 테스트 리워드 광고 슬롯 정의
-      // 실제 서비스 적용 시 본인의 GAM 네트워크 ID 및 광고 단위 경로로 변경하세요. (예: '/12345678/my_rewarded_slot')
+      // 보상형 광고 슬롯 정의 (/22056527556/reward_banner)
       rewardedSlot = googletag.defineRewardedSlot(
-        '/22639388115/rewarded_web_example',
+        '/22056527556/reward_banner',
         [[1, 1]]
       ).addService(googletag.pubads());
 
-      // 2. 리워드 지급(시청 완료) 이벤트 수신
+      // 1. 광고 시청 완료(보상 지급) 이벤트
       googletag.pubads().addEventListener('rewardedSlotGranted', function(event) {
-        console.log('Reward granted!', event);
-        unlockRewardContent();
+        console.log('Reward granted!');
+        unlockEventContent();
       });
 
-      // 3. 광고 준비 완료 이벤트 수신
+      // 2. 광고 준비 완료 이벤트
       googletag.pubads().addEventListener('rewardedSlotReady', function(event) {
         console.log('Rewarded slot is ready.');
         isAdReady = true;
-        
         const btn = document.getElementById('reward-btn');
-        const status = document.getElementById('status');
-        
         btn.disabled = false;
-        status.textContent = '광고 준비 완료';
-        status.className = 'status-badge ready';
+        btn.textContent = '광고 보고 응모하기';
       });
 
-      // 4. 광고 닫힘 이벤트 수신
+      // 3. 광고 닫힘 이벤트
       googletag.pubads().addEventListener('rewardedSlotClosed', function(event) {
-        console.log('Rewarded slot closed.');
-        // 슬롯 재사용을 위해 파기
         googletag.destroySlots([rewardedSlot]);
       });
 
       googletag.enableServices();
-      
-      // 광고 데이터 요청/디스플레이
       googletag.display(rewardedSlot);
     });
 
-    // 버튼 클릭 시 리워드 광고 모달 표시
+    // 버튼 클릭 시 광고 모달 표시
     function showAd() {
       if (isAdReady && rewardedSlot) {
         googletag.cmd.push(function() {
-          // 리워드 광고 모달/프롬프트 표시
           rewardedSlot.makeRewardedVisible();
         });
       } else {
-        alert('광고가 아직 준비되지 않았습니다. 잠시 후 다시 시도해주세요.');
+        alert('광고를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
       }
     }
 
-    // 콘텐츠 잠금 해제 및 접힘 영역 펼치기
-    function unlockRewardContent() {
-      document.getElementById('locked-box').style.display = 'none';
-      document.getElementById('unlocked-box').style.display = 'block';
+    // 광고 완료 시 이미지 노출
+    function unlockEventContent() {
+      document.getElementById('gate-box').style.display = 'none';
       
-      const status = document.getElementById('status');
-      status.textContent = '잠금 해제됨';
-      status.className = 'status-badge unlocked';
+      const imageBox = document.getElementById('event-image-box');
+      imageBox.style.display = 'block';
+      imageBox.scrollIntoView({ behavior: 'smooth' });
     }
   </script>
 </body>
