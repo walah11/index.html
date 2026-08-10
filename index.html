@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KBS 2TV 주말드라마 <사랑이 온다> 본방사수 이벤트</title>
 
-  <!-- Google Publisher Tag (GPT) 공식 라이브러리 -->
+  <!-- Google Publisher Tag (GPT) 라이브러리 -->
   <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
 
   <style>
@@ -216,7 +216,6 @@
     window.googletag = window.googletag || {cmd: []};
 
     let rewardedSlot;
-    let isRewardedReady = false;
     let makeRewardedVisibleFn = null;
 
     googletag.cmd.push(function() {
@@ -229,33 +228,30 @@
         rewardedSlot.addService(googletag.pubads());
 
         googletag.pubads().addEventListener('rewardedSlotReady', function(evt) {
-          console.log('웹 보상형 광고 수신 완료 (Ready)');
-          isRewardedReady = true;
+          console.log('[GPT] 웹 보상형 광고 준비 완료!');
           makeRewardedVisibleFn = evt.makeRewardedVisible;
         });
 
         googletag.pubads().addEventListener('rewardedSlotGranted', function(evt) {
-          console.log('보상 지급 조건 충족');
+          console.log('[GPT] 광고 시청 완료: 보상 승인');
           grantKbsReward();
         });
 
         googletag.pubads().addEventListener('rewardedSlotClosed', function(evt) {
-          console.log('보상형 광고가 닫혔습니다.');
+          console.log('[GPT] 보상형 광고 닫힘');
           googletag.destroySlots([rewardedSlot]);
         });
 
         googletag.enableServices();
-
-        // Out-Of-Page 웹 보상형 광고 명시적 Ad Fetch 호출
-        googletag.pubads().refresh([rewardedSlot]);
+        googletag.display(rewardedSlot);
       }
     });
 
     function showRewardedAd() {
-      if (isRewardedReady && typeof makeRewardedVisibleFn === 'function') {
+      if (typeof makeRewardedVisibleFn === 'function') {
         makeRewardedVisibleFn();
       } else {
-        console.warn("광고 수신 준비 중이거나 Fill 물량이 없어 바로 이벤트 응모를 진행합니다.");
+        console.warn('[GPT] 광고가 준비되지 않았거나 No Fill 상태입니다. 예외 응모를 진행합니다.');
         grantKbsReward();
       }
     }
