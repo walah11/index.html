@@ -200,13 +200,8 @@
         <span id="ad-timer" class="ad-timer-badge">광고 시청 중 (5초)</span>
       </div>
       <div class="ad-body">
-        <!-- GAM 광고 슬롯 영역 -->
-        <div id="gpt-rewarded-slot">
-          <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 10px;">스폰서 동영상/이미지 광고가 재생 중입니다.</p>
-          <div style="width: 300px; height: 180px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
-            <strong style="color: #475569;">[ 광고 시청 영역 ]</strong>
-          </div>
-        </div>
+        <!-- GAM 실제 광고 슬롯 영역 -->
+        <div id="gpt-rewarded-slot"></div>
         <button id="ad-complete-btn" class="btn-close-ad" onclick="grantReward()">
           시청 완료! 응모하기
         </button>
@@ -221,8 +216,8 @@
     let timerId = null;
 
     googletag.cmd.push(function() {
-      // GAM 일반 비동기 광고 등록 (모바일/PC 제약 없는 수신 세팅)
-      googletag.defineSlot('/22639388115/rewarded_web_example', [300, 250], 'gpt-rewarded-slot')
+      // 본인 GAM 광고 단위 경로 (/22056527556/reward_banner) 적용
+      googletag.defineSlot('/22056527556/reward_banner', [[300, 250], [1, 1], 'fluid'], 'gpt-rewarded-slot')
                .addService(googletag.pubads());
       googletag.enableServices();
     });
