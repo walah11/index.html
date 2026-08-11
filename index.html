@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>페이지 진입 전면 배너</title>
+  <title>TVUT 메인 페이지</title>
 
   <!-- Google Publisher Tag (GPT) 라이브러리 -->
   <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js" crossorigin="anonymous"></script>
   <script>
     window.googletag = window.googletag || {cmd: []};
     googletag.cmd.push(function() {
-      // 지정해주신 GAM 광고 단위 (/22056527556/interad) 및 멀티 크기 설정
       googletag.defineSlot('/22056527556/interad', [[640, 480], [300, 250], [300, 500], [800, 600], [320, 480]], 'div-gpt-ad-1786426722536-0')
                .addService(googletag.pubads());
       
@@ -20,25 +19,49 @@
   </script>
 
   <style>
-    /* 기본 스타일 초기화 */
+    /* 기본 리셋 */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
-    /* 전면 오버레이 배경 */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #111111;
+      color: #ffffff;
+    }
+
+    /* 본문 콘텐츠 (포스터 영역 예시) */
+    .main-page-container {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .poster-img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+
+    /* 전면 배너 모달 오버레이 */
     .interstitial-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background-color: rgba(0, 0, 0, 0.75);
+      background-color: rgba(0, 0, 0, 0.85); /* 어두운 배경 반투명 */
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 99999;
+      z-index: 999999; /* 본문보다 항상 위에 노출 */
     }
 
     /* 모달 컨테이너 */
@@ -58,25 +81,25 @@
       align-items: center;
       overflow: hidden;
       border-radius: 8px;
-      background-color: #000000;
+      background-color: transparent;
     }
 
     /* 닫기 버튼 */
     .close-btn {
       position: absolute;
-      top: -14px;
-      right: -14px;
-      width: 32px;
-      height: 32px;
+      top: -16px;
+      right: -16px;
+      width: 36px;
+      height: 36px;
       background-color: #ffffff;
-      color: #333333;
+      color: #000000;
       border: none;
       border-radius: 50%;
-      font-size: 18px;
+      font-size: 22px;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-      z-index: 100000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      z-index: 1000000;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -84,7 +107,7 @@
 
     /* 하단 옵션 바 */
     .bottom-bar {
-      margin-top: 10px;
+      margin-top: 12px;
       display: flex;
       gap: 15px;
     }
@@ -93,7 +116,7 @@
       background: none;
       border: none;
       color: #ffffff;
-      font-size: 13px;
+      font-size: 14px;
       text-decoration: underline;
       cursor: pointer;
     }
@@ -105,10 +128,20 @@
 </head>
 <body>
 
-  <!-- 전면 배너 모달 레이어 -->
+  <!-- 1. 메인 본문 콘텐츠 (X 누르면 노출될 포스터/페이지 영역) -->
+  <div class="main-page-container">
+    <!-- poster.png 또는 본문 화면 -->
+    <img src="poster.png" alt="메인 포스터" class="poster-img" onerror="this.style.display='none'; document.getElementById('alt-text').style.display='block';">
+    <div id="alt-text" style="display:none; text-align:center; padding: 50px;">
+      <h1>메인 페이지 콘텐츠 (poster.png)</h1>
+      <p>전면 배너 모달이 닫히면 이 본문 페이지가 나타납니다.</p>
+    </div>
+  </div>
+
+  <!-- 2. 전면 배너 모달 레이어 -->
   <div id="interstitialModal" class="interstitial-overlay">
     <div class="interstitial-container">
-      <!-- 상단 닫기 버튼 -->
+      <!-- 닫기 버튼 -->
       <button type="button" class="close-btn" onclick="closeBanner()">&times;</button>
       
       <!-- GAM 광고 출력 Div -->
@@ -120,7 +153,7 @@
         </div>
       </div>
 
-      <!-- 하단 옵션 바 -->
+      <!-- 하단 옵션 -->
       <div class="bottom-bar">
         <button type="button" onclick="closeBannerToday()">오늘 하루 보지 않기</button>
       </div>
@@ -128,22 +161,25 @@
   </div>
 
   <script>
+    // 전면 배너 닫기 함수
     function closeBanner() {
-      document.getElementById('interstitialModal').style.display = 'none';
+      var modal = document.getElementById('interstitialModal');
+      if (modal) {
+        modal.style.display = 'none'; // 모달 전체 레이어 제거
+      }
     }
 
     function closeBannerToday() {
-      // 24시간 쿠키/LocalStorage 설정
       const expiry = new Date().getTime() + (24 * 60 * 60 * 1000);
       localStorage.setItem('hideEntryBannerUntil', expiry);
       closeBanner();
     }
 
-    // 페이지 진입 시 노출 여부 체크 및 제어
+    // 페이지 진입 시 체크
     document.addEventListener('DOMContentLoaded', function() {
       const hideUntil = localStorage.getItem('hideEntryBannerUntil');
       if (hideUntil && new Date().getTime() < parseInt(hideUntil)) {
-        document.getElementById('interstitialModal').style.display = 'none';
+        closeBanner();
       }
     });
   </script>
