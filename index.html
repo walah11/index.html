@@ -19,11 +19,11 @@
         if (event.slot === slot) {
           var modal = document.getElementById('interstitialModal');
           
-          // 1. 광고가 없는 경우 (No Fill / isEmpty) 팝업 감추기
+          // 1. 광고가 없는 경우 (No Fill) 팝업 안 노출
           if (event.isEmpty) {
             if (modal) modal.style.display = 'none';
           } else {
-            // 2. 광고가 정상 노출되면 팝업을 띄우고 2초 카운트다운 시작
+            // 2. 광고가 정상 노출되면 팝업 노출 및 2초 타이머 시작
             if (modal) modal.style.display = 'flex';
             startCloseTimer(2);
           }
@@ -101,7 +101,7 @@
       width: 100vw;
       height: 100vh;
       background-color: rgba(0, 0, 0, 0.8);
-      display: none; /* 광고 로드 확인 전까지 팝업을 숨겨둡니다 */
+      display: none; /* 광고 로드 확인 전까지 숨김 */
       justify-content: center;
       align-items: center;
       z-index: 999999;
@@ -135,7 +135,7 @@
       display: block !important;
     }
 
-    /* 카운트다운 및 닫기 버튼 스타일 */
+    /* 2초 카운트다운 & 닫기 버튼 스타일 */
     .close-btn {
       position: absolute;
       top: -14px;
@@ -157,7 +157,7 @@
       transition: all 0.2s ease;
     }
 
-    /* 2초 후 활성화되었을 때 버튼 스타일 */
+    /* 2초 후 활성화되었을 때 스타일 */
     .close-btn.active {
       background-color: #ffffff;
       color: #000000;
@@ -165,25 +165,11 @@
       font-size: 20px;
       cursor: pointer;
     }
-
-    .bottom-bar {
-      margin-top: 10px;
-      text-align: center;
-    }
-
-    .bottom-bar button {
-      background: none;
-      border: none;
-      color: #ffffff;
-      font-size: 13px;
-      text-decoration: underline;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
 
-  <!-- 본문 포스터 -->
+  <!-- 메인 이벤트 포스터 -->
   <div class="event-page-container">
     <img src="event_poster.png" alt="이벤트 포스터" class="event-poster-img" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x1200?text=event_poster.png+Not+Found';">
   </div>
@@ -191,7 +177,7 @@
   <!-- 전면 배너 모달 -->
   <div id="interstitialModal" class="interstitial-overlay">
     <div class="interstitial-container">
-      <!-- 2초 타이머 닫기 버튼 -->
+      <!-- 2초 타이머/닫기 버튼 -->
       <button type="button" id="closeBtn" class="close-btn" onclick="closeBanner()" disabled>2s</button>
       
       <div class="ad-slot-wrapper">
@@ -203,39 +189,19 @@
           </script>
         </div>
       </div>
-
-      <div class="bottom-bar">
-        <button type="button" onclick="closeBannerToday()">오늘 하루 보지 않기</button>
-      </div>
     </div>
   </div>
 
   <script>
     function closeBanner() {
       var closeBtn = document.getElementById('closeBtn');
-      if (closeBtn && closeBtn.disabled) return; // 2초 전 클릭 방지
+      if (closeBtn && closeBtn.disabled) return; // 2초 완료 전 클릭 차단
       
       var modal = document.getElementById('interstitialModal');
       if (modal) {
         modal.style.display = 'none';
       }
     }
-
-    function closeBannerToday() {
-      const expiry = new Date().getTime() + (24 * 60 * 60 * 1000);
-      localStorage.setItem('hideEntryBannerUntil', expiry);
-      
-      var modal = document.getElementById('interstitialModal');
-      if (modal) modal.style.display = 'none';
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-      const hideUntil = localStorage.getItem('hideEntryBannerUntil');
-      if (hideUntil && new Date().getTime() < parseInt(hideUntil)) {
-        var modal = document.getElementById('interstitialModal');
-        if (modal) modal.style.display = 'none';
-      }
-    });
   </script>
 
 </body>
