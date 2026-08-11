@@ -35,7 +35,7 @@
       align-items: center;
     }
 
-    /* 이벤트 포스터 */
+    /* 본문 이벤트 포스터 */
     .event-page-container {
       width: 100%;
       max-width: 1000px;
@@ -89,20 +89,26 @@
       max-height: 70vh;
     }
 
-    /* GAM Div 및 생성되는 iframe 크기 강제 확정 */
+    /* GAM Div 및 iFrame 크기 강제 확정 (Not Displayed / 축소 현상 방지) */
     #div-gpt-ad-1786426722536-0 {
       width: 100% !important;
       height: 100% !important;
+      min-width: 300px !important;
+      min-height: 250px !important;
       display: flex !important;
-      justify-content: center;
-      align-items: center;
+      justify-content: center !important;
+      align-items: center !important;
     }
 
     #div-gpt-ad-1786426722536-0 iframe {
       width: 100% !important;
       height: 100% !important;
+      min-width: 300px !important;
+      min-height: 250px !important;
       border: none !important;
       display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
 
     .close-btn {
@@ -147,12 +153,12 @@
 </head>
 <body>
 
-  <!-- 메인 이벤트 포스터 -->
+  <!-- 1. 본문 영역: event_poster.png -->
   <div class="event-page-container">
     <img src="event_poster.png" alt="이벤트 포스터" class="event-poster-img" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x1200?text=event_poster.png+Not+Found';">
   </div>
 
-  <!-- 전면 배너 모달 -->
+  <!-- 2. 전면 배너 모달 레이어 -->
   <div id="interstitialModal" class="interstitial-overlay">
     <div class="interstitial-container">
       <button type="button" class="close-btn" onclick="closeBanner()">&times;</button>
