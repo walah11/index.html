@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TVUT 메인 페이지</title>
+  <title>이벤트 포스터 및 전면 배너</title>
 
   <!-- Google Publisher Tag (GPT) 라이브러리 -->
   <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js" crossorigin="anonymous"></script>
   <script>
     window.googletag = window.googletag || {cmd: []};
     googletag.cmd.push(function() {
+      // 지정한 GAM 광고 단위 및 멀티 사이즈 정의
       googletag.defineSlot('/22056527556/interad', [[640, 480], [300, 250], [300, 500], [800, 600], [320, 480]], 'div-gpt-ad-1786426722536-0')
                .addService(googletag.pubads());
       
@@ -19,7 +20,7 @@
   </script>
 
   <style>
-    /* 기본 리셋 */
+    /* 기본 초기화 */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -30,24 +31,28 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: #111111;
       color: #ffffff;
-    }
-
-    /* 본문 콘텐츠 (포스터 영역 예시) */
-    .main-page-container {
-      width: 100%;
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+    }
+
+    /* 본문 이벤트 포스터 영역 */
+    .event-page-container {
+      width: 100%;
+      max-width: 1000px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       padding: 20px;
     }
 
-    .poster-img {
+    .event-poster-img {
       max-width: 100%;
       height: auto;
       border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      display: block;
     }
 
     /* 전면 배너 모달 오버레이 */
@@ -57,11 +62,11 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background-color: rgba(0, 0, 0, 0.85); /* 어두운 배경 반투명 */
+      background-color: rgba(0, 0, 0, 0.85); /* 모달 어두운 배경 */
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 999999; /* 본문보다 항상 위에 노출 */
+      z-index: 999999; /* 포스터 위에 항상 노출 */
     }
 
     /* 모달 컨테이너 */
@@ -128,14 +133,9 @@
 </head>
 <body>
 
-  <!-- 1. 메인 본문 콘텐츠 (X 누르면 노출될 포스터/페이지 영역) -->
-  <div class="main-page-container">
-    <!-- poster.png 또는 본문 화면 -->
-    <img src="poster.png" alt="메인 포스터" class="poster-img" onerror="this.style.display='none'; document.getElementById('alt-text').style.display='block';">
-    <div id="alt-text" style="display:none; text-align:center; padding: 50px;">
-      <h1>메인 페이지 콘텐츠 (poster.png)</h1>
-      <p>전면 배너 모달이 닫히면 이 본문 페이지가 나타납니다.</p>
-    </div>
+  <!-- 1. 본문 영역: event_poster.png -->
+  <div class="event-page-container">
+    <img src="event_poster.png" alt="이벤트 포스터" class="event-poster-img" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x1200?text=event_poster.png+Not+Found';">
   </div>
 
   <!-- 2. 전면 배너 모달 레이어 -->
@@ -153,7 +153,7 @@
         </div>
       </div>
 
-      <!-- 하단 옵션 -->
+      <!-- 하단 옵션 바 -->
       <div class="bottom-bar">
         <button type="button" onclick="closeBannerToday()">오늘 하루 보지 않기</button>
       </div>
@@ -165,7 +165,7 @@
     function closeBanner() {
       var modal = document.getElementById('interstitialModal');
       if (modal) {
-        modal.style.display = 'none'; // 모달 전체 레이어 제거
+        modal.style.display = 'none'; // X 버튼 클릭 시 모달 제거 -> 뒤의 event_poster.png 노출
       }
     }
 
@@ -175,7 +175,7 @@
       closeBanner();
     }
 
-    // 페이지 진입 시 체크
+    // 페이지 진입 시 숨김 여부 체크
     document.addEventListener('DOMContentLoaded', function() {
       const hideUntil = localStorage.getItem('hideEntryBannerUntil');
       if (hideUntil && new Date().getTime() < parseInt(hideUntil)) {
