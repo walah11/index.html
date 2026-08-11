@@ -1,37 +1,188 @@
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    width: 100% !important;
-    height: 100% !important;
-    overflow: hidden;
-    background-color: #000000;
-  }
-  .ad-wrapper {
-    width: 100% !important;
-    height: 100% !important;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .ad-wrapper a {
-    width: 100% !important;
-    height: 100% !important;
-    display: block;
-  }
-  /* 작은 크기의 비디오/이미지도 부모 640x480 프레임에 꽉 차도록 지정 */
-  .ad-wrapper video, .ad-wrapper img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important; /* 또는 contain */
-    display: block;
-  }
-</style>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KBS 이벤트 메인</title>
 
-<div class="ad-wrapper">
-  <a href="%%CLICK_URL_UNESC%%%%DEST_URL%%" target="_blank">
-    <video autoplay muted loop playsinline controls>
-      <source src="https://skbmov.mobwithad.com/kbsad/2026/a2JzX2hvdXNl/0806104154_r07fidc8k_720p.mp4" type="video/mp4">
-    </video>
-  </a>
-</div>
+  <!-- Google Publisher Tag (GPT) 라이브러리 -->
+  <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js" crossorigin="anonymous"></script>
+  <script>
+    window.googletag = window.googletag || {cmd: []};
+    googletag.cmd.push(function() {
+      googletag.defineSlot('/22056527556/interad', [[640, 480], [300, 250], [300, 500], [800, 600], [320, 480]], 'div-gpt-ad-1786426722536-0')
+               .addService(googletag.pubads());
+      
+      googletag.setConfig({singleRequest: true});
+      googletag.enableServices();
+    });
+  </script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #111111;
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 이벤트 포스터 메인 */
+    .event-page-container {
+      width: 100%;
+      max-width: 1000px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .event-poster-img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      display: block;
+    }
+
+    /* 전면 배너 모달 배경 */
+    .interstitial-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999999;
+    }
+
+    /* 광고 사이즈에 따라 자동으로 꽉 맞물리는 모달 래퍼 */
+    .interstitial-container {
+      position: relative;
+      display: inline-block;
+      max-width: 95vw;
+      max-height: 95vh;
+    }
+
+    .ad-slot-wrapper {
+      display: inline-block;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #000000;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    }
+
+    /* GAM Div 크기를 자동(auto)으로 설정하여 낙찰된 소재 크기에 밀착 */
+    #div-gpt-ad-1786426722536-0 {
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      width: auto !important;
+      height: auto !important;
+    }
+
+    #div-gpt-ad-1786426722536-0 iframe {
+      border: none !important;
+      display: block !important;
+    }
+
+    /* 닫기 (X) 버튼 */
+    .close-btn {
+      position: absolute;
+      top: -14px;
+      right: -14px;
+      width: 32px;
+      height: 32px;
+      background-color: #ffffff;
+      color: #000000;
+      border: none;
+      border-radius: 50%;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      z-index: 1000000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 하단 옵션 바 */
+    .bottom-bar {
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .bottom-bar button {
+      background: none;
+      border: none;
+      color: #ffffff;
+      font-size: 13px;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 본문 이벤트 포스터 -->
+  <div class="event-page-container">
+    <img src="event_poster.png" alt="이벤트 포스터" class="event-poster-img" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x1200?text=event_poster.png+Not+Found';">
+  </div>
+
+  <!-- 전면 배너 모달 레이어 -->
+  <div id="interstitialModal" class="interstitial-overlay">
+    <div class="interstitial-container">
+      <button type="button" class="close-btn" onclick="closeBanner()">&times;</button>
+      
+      <div class="ad-slot-wrapper">
+        <div id='div-gpt-ad-1786426722536-0'>
+          <script>
+            googletag.cmd.push(function() { 
+              googletag.display('div-gpt-ad-1786426722536-0');
+            });
+          </script>
+        </div>
+      </div>
+
+      <div class="bottom-bar">
+        <button type="button" onclick="closeBannerToday()">오늘 하루 보지 않기</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function closeBanner() {
+      var modal = document.getElementById('interstitialModal');
+      if (modal) {
+        modal.style.display = 'none';
+      }
+    }
+
+    function closeBannerToday() {
+      const expiry = new Date().getTime() + (24 * 60 * 60 * 1000);
+      localStorage.setItem('hideEntryBannerUntil', expiry);
+      closeBanner();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const hideUntil = localStorage.getItem('hideEntryBannerUntil');
+      if (hideUntil && new Date().getTime() < parseInt(hideUntil)) {
+        closeBanner();
+      }
+    });
+  </script>
+
+</body>
+</html>
