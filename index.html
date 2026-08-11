@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KBS 이벤트 메인</title>
 
+  <!-- 광고 서버 사전 연결로 로딩 속도 최적화 -->
+  <link rel="preconnect" href="https://securepubads.g.doubleclick.net" crossorigin>
+  <link rel="dns-prefetch" href="https://securepubads.g.doubleclick.net">
+  <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+
   <!-- Google Publisher Tag (GPT) 라이브러리 -->
   <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js" crossorigin="anonymous"></script>
   <script>
@@ -14,19 +19,22 @@
       var slot = googletag.defineSlot('/22056527556/interad', [[640, 480], [300, 250], [300, 500], [800, 600], [320, 480]], 'div-gpt-ad-1786426722536-0')
                .addService(googletag.pubads());
 
-      // 광고 렌더링 완료 감지 이벤트
-      googletag.pubads().addEventListener('slotRenderEnded', function(event) {
+      // 1. 광고 수신 및 iFrame 생성 즉시 팝업 노출 (속도 최우선)
+      googletag.pubads().addEventListener('slotOnload', function(event) {
         if (event.slot === slot) {
           var modal = document.getElementById('interstitialModal');
-          
-          // 1. 광고가 없는 경우 (No Fill) 팝업 안 노출
-          if (event.isEmpty) {
-            if (modal) modal.style.display = 'none';
-          } else {
-            // 2. 광고가 정상 노출되면 팝업 노출 및 2초 타이머 시작
-            if (modal) modal.style.display = 'flex';
+          if (modal && modal.style.display !== 'flex') {
+            modal.style.display = 'flex';
             startCloseTimer(2);
           }
+        }
+      });
+
+      // 2. 광고가 없는 경우(No Fill)에만 팝업 숨기기
+      googletag.pubads().addEventListener('slotRenderEnded', function(event) {
+        if (event.slot === slot && event.isEmpty) {
+          var modal = document.getElementById('interstitialModal');
+          if (modal) modal.style.display = 'none';
         }
       });
 
@@ -37,7 +45,8 @@
     // 2초 카운트다운 및 X 버튼 전환 로직
     function startCloseTimer(seconds) {
       var closeBtn = document.getElementById('closeBtn');
-      if (!closeBtn) return;
+      if (!closeBtn || closeBtn.dataset.started === "true") return;
+      closeBtn.dataset.started = "true"; // 중복 실행 방지
 
       closeBtn.disabled = true;
       closeBtn.classList.remove('active');
@@ -93,7 +102,7 @@
       display: block;
     }
 
-    /* 전면 배너 모달 오버레이 (초기 상태 숨김) */
+    /* 전면 배너 모달 오버레이 */
     .interstitial-overlay {
       position: fixed;
       top: 0;
@@ -101,7 +110,7 @@
       width: 100vw;
       height: 100vh;
       background-color: rgba(0, 0, 0, 0.8);
-      display: none; /* 광고 로드 확인 전까지 숨김 */
+      display: none; /* 기본 상태 숨김 */
       justify-content: center;
       align-items: center;
       z-index: 999999;
@@ -157,7 +166,6 @@
       transition: all 0.2s ease;
     }
 
-    /* 2초 후 활성화되었을 때 스타일 */
     .close-btn.active {
       background-color: #ffffff;
       color: #000000;
@@ -177,7 +185,6 @@
   <!-- 전면 배너 모달 -->
   <div id="interstitialModal" class="interstitial-overlay">
     <div class="interstitial-container">
-      <!-- 2초 타이머/닫기 버튼 -->
       <button type="button" id="closeBtn" class="close-btn" onclick="closeBanner()" disabled>2s</button>
       
       <div class="ad-slot-wrapper">
@@ -195,7 +202,7 @@
   <script>
     function closeBanner() {
       var closeBtn = document.getElementById('closeBtn');
-      if (closeBtn && closeBtn.disabled) return; // 2초 완료 전 클릭 차단
+      if (closeBtn && closeBtn.disabled) return;
       
       var modal = document.getElementById('interstitialModal');
       if (modal) {
